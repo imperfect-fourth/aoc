@@ -90,5 +90,5 @@ func (d day1) part2() string {
 
 func (d day1) Solve() {
 	fmt.Printf("Day 1 Part 1: %s\n", d.part1())
-	fmt.Printf("Day 1 Part 1: %s\n", d.part2())
+	fmt.Printf("Day 1 Part 2: %s\n", d.part2())
 }
