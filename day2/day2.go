@@ -50,7 +50,7 @@ func (d *day2) parseInput(reader io.Reader) error {
 	return nil
 }
 
-func (d day2) part1() string {
+func (d day2) Part1() string {
 	safeReports := 0
 	for _, report := range d.reports {
 		if !isReportSafe(report) {
@@ -61,7 +61,7 @@ func (d day2) part1() string {
 	return strconv.Itoa(safeReports)
 }
 
-func (d day2) part2() string {
+func (d day2) Part2() string {
 	safeReports := 0
 	for _, report := range d.reports {
 		if !isReportSafeWithDeletion(report) {
@@ -124,7 +124,6 @@ func isReportSafeWithoutIndex(report []int, index int) bool {
 	return isReportSafe(append(reportCopy[:index], reportCopy[index+1:]...))
 }
 
-func (d day2) Solve() {
-	fmt.Printf("Day 2 Part 1: %s\n", d.part1())
-	fmt.Printf("Day 2 Part 2: %s\n", d.part2())
+func (d day2) Day() int {
+	return 2
 }

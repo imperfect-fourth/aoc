@@ -25,6 +25,6 @@ func Test(t *testing.T) {
 			{1, 3, 6, 7, 9},
 		},
 	})
-	assert.Equal(t, d.part1(), "2")
-	assert.Equal(t, d.part2(), "4")
+	assert.Equal(t, d.Part1(), "2")
+	assert.Equal(t, d.Part2(), "4")
 }

@@ -59,7 +59,7 @@ func (d *day1) parseInput(reader io.Reader) error {
 	return nil
 }
 
-func (d day1) part1() string {
+func (d day1) Part1() string {
 	sortedLeft := slices.Sorted(slices.Values(d.left))
 	sortedRight := slices.Sorted(slices.Values(d.right))
 
@@ -75,7 +75,7 @@ func (d day1) part1() string {
 	return strconv.Itoa(distance)
 }
 
-func (d day1) part2() string {
+func (d day1) Part2() string {
 	frequency := make(map[int]int)
 	for _, n := range d.right {
 		frequency[n] += 1
@@ -88,7 +88,6 @@ func (d day1) part2() string {
 	return strconv.Itoa(similarity)
 }
 
-func (d day1) Solve() {
-	fmt.Printf("Day 1 Part 1: %s\n", d.part1())
-	fmt.Printf("Day 1 Part 2: %s\n", d.part2())
+func (d day1) Day() int {
+	return 1
 }

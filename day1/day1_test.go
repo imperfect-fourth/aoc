@@ -16,6 +16,6 @@ func TestDay1(t *testing.T) {
 5 4
 3 7`))
 	assert.Equal(t, d, &day1{left: []int{1, 2, 4, 7, 5, 3}, right: []int{3, 3, 1, 4, 4, 7}})
-	assert.Equal(t, d.part1(), "2")
-	assert.Equal(t, d.part2(), "22")
+	assert.Equal(t, d.Part1(), "2")
+	assert.Equal(t, d.Part2(), "22")
 }
