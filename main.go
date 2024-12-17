@@ -7,6 +7,7 @@ import (
 	"github.com/imperfect-fourth/aoc/day2"
 	"github.com/imperfect-fourth/aoc/day3"
 	"github.com/imperfect-fourth/aoc/day4"
+	"github.com/imperfect-fourth/aoc/day5"
 )
 
 type Day interface {
@@ -21,6 +22,7 @@ func main() {
 		day2.New("inputs/day2.txt"),
 		day3.New("inputs/day3.txt"),
 		day4.New("inputs/day4.txt"),
+		day5.New("inputs/day5.txt"),
 	}
 
 	for _, d := range days {
