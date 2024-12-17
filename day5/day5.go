@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -17,10 +17,8 @@ type node struct {
 }
 
 type day5 struct {
-	nodeMap map[string]*node
-	adjList map[*node][]*node
-
-	ops [][]string
+	ordering map[string]map[string]int
+	ops      [][]string
 }
 
 func New(inputFilepath string) *day5 {
@@ -44,41 +42,74 @@ func (d *day5) parseInput(reader io.Reader) error {
 	if len(split) != 2 {
 		return errors.New("invalid input")
 	}
-	makeGraph(d, split[0])
+	d.ordering = getOrdering(split[0])
 	d.ops = splitOps(split[1])
-
-	for val, node := range d.nodeMap {
-		fmt.Println(val, *(node.level))
-	}
 	return nil
 }
 
 func (d day5) Part1() string {
 	ans := 0
 	for _, op := range d.ops {
-		currLevel := math.MinInt
 		ok := true
-		for _, update := range op {
-			if _, nok := d.nodeMap[update]; !nok {
-				ok = false
-				fmt.Println("not found")
-				break
-			}
-			if *(d.nodeMap[update].level) < currLevel {
-				fmt.Println(op)
-				fmt.Println(*(d.nodeMap[update]))
+	opLoop:
+		for i := 0; i < len(op)-1; i++ {
+			if _, nok := d.ordering[op[i]]; !nok {
 				ok = false
 				break
 			}
-			currLevel = *(d.nodeMap[update].level)
+			for j := i + 1; j < len(op); j++ {
+				if d.ordering[op[i]][op[j]] != 1 {
+					ok = false
+					break opLoop
+				}
+			}
 		}
 		if ok {
+			mid, _ := strconv.Atoi(string(op[(len(op)-1)/2]))
+			ans += mid
+		}
+	}
+	return strconv.Itoa(ans)
+}
+
+func (d day5) Part2() string {
+	ans := 0
+	for _, op := range d.ops {
+		ok := true
+	opLoop:
+		for i := 0; i < len(op)-1; i++ {
+			if _, nok := d.ordering[op[i]]; !nok {
+				ok = false
+				break
+			}
+			for j := i + 1; j < len(op); j++ {
+				if d.ordering[op[i]][op[j]] != 1 {
+					ok = false
+					break opLoop
+				}
+			}
+		}
+		if !ok {
+			fmt.Println(op)
+			slices.SortFunc(op, func(a, b string) int {
+				if _, ok := d.ordering[a]; ok {
+					if _, ok := d.ordering[a][b]; ok {
+						return 1
+					}
+					return -1
+				}
+				return -1
+			})
 			fmt.Println(op)
 			mid, _ := strconv.Atoi(string(op[(len(op)-1)/2]))
 			ans += mid
 		}
 	}
 	return strconv.Itoa(ans)
+}
+
+func (d day5) Day() int {
+	return 5
 }
 
 func splitOps(raw []byte) [][]string {
@@ -90,64 +121,20 @@ func splitOps(raw []byte) [][]string {
 	return ops
 }
 
-func makeGraph(d *day5, graph []byte) {
-	edges := bytes.Split(graph, []byte("\n"))
-	nodeMap := make(map[string]*node)
-	adjList := make(map[*node][]*node)
+func getOrdering(graph []byte) map[string]map[string]int {
+	orderings := bytes.Split(graph, []byte("\n"))
+	ordering := make(map[string]map[string]int)
 
 	delimeter := []byte("|")
-	for _, edge := range edges {
-		nodes := bytes.Split(edge, delimeter)
-		node0 := string(nodes[0])
-		node1 := string(nodes[1])
-		if _, ok := nodeMap[node1]; !ok {
-			nodeMap[node1] = &node{val: node1}
-		}
-		if _, ok := nodeMap[node0]; !ok {
-			nodeMap[node0] = &node{val: node0}
-		}
-		adjList[nodeMap[node0]] = append(adjList[nodeMap[node0]], nodeMap[node1])
-	}
+	for _, o := range orderings {
+		n := bytes.Split(o, delimeter)
+		n0 := string(n[0])
+		n1 := string(n[1])
 
-	for k, _ := range adjList {
-		assignLevel(k, adjList, 0, "")
-	}
-	d.nodeMap = nodeMap
-	d.adjList = adjList
-}
-
-func assignLevel(n *node, adjList map[*node][]*node, level int, tab string) int {
-	fmt.Printf("%sassigning %s %d\n", tab, n.val, level)
-	if n.level != nil {
-		return *(n.level)
-	}
-	minLevel := level
-	for _, neighbour := range adjList[n] {
-		if neighbour.level == nil {
-			continue
+		if _, ok := ordering[n0]; !ok {
+			ordering[n0] = make(map[string]int)
 		}
-		fmt.Printf("%schild set %s %d\n", tab, neighbour.val, *(neighbour.level))
-		minLevel = min(minLevel, *(neighbour.level)-1)
+		ordering[n0][n1] = 1
 	}
-	n.level = &minLevel
-	fmt.Printf("%sassigned %s %d\n", tab, string(n.val), *(n.level))
-	for _, neighbour := range adjList[n] {
-		if neighbour.level != nil {
-			continue
-		}
-		assigned := assignLevel(neighbour, adjList, *(n.level)+1, fmt.Sprintf("%s  ", tab))
-		if assigned <= *(n.level) {
-			*(n.level) = assigned - 1
-			fmt.Printf("%schanged %s %d\n", tab, string(n.val), *(n.level))
-		}
-	}
-	return *(n.level)
-}
-
-func (d day5) Part2() string {
-	return ""
-}
-
-func (d day5) Day() int {
-	return 5
+	return ordering
 }

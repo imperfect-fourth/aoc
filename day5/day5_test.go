@@ -39,5 +39,6 @@ func Test(t *testing.T) {
 97,13,75,29,47`))
 
 	assert.Equal(t, "143", d.Part1())
+	assert.Equal(t, "123", d.Part2())
 
 }
